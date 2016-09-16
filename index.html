@@ -163,9 +163,9 @@
 
             function getLocation() {
                 if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(showPosition);
+                    navigator.geolocation.getCurrentPosition(showPosition, geolocationErrorHandler);
                 } else {
-                    x.innerHTML = "Geolocation is not supported by this browser.";
+                   printErrorMessage("Geolocation is not supported by this browser.");				    
                 }
             }
 
@@ -173,25 +173,24 @@
                 infoWeather = new InfoWeather(position.coords.latitude, position.coords.longitude);
                 infoWeather.getWeather()
                     .done(x=> assignValues(x))
-                    .fail(function (jqxhr, textStatus, error) {
-                        assignEmptyValues();
-                        $("#errorMessage").text("Error getting weather information");
+                    .fail(function (jqxhr, textStatus, error) {                        
+                        printErrorMessage("Error getting weather information");
                     });
             }
 
             function geolocationErrorHandler(error) {
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
-                        $("#errorMessage").text = "User denied the request for Geolocation."
+                        printErrorMessage.text("User denied the request for Geolocation.");
                         break;
                     case error.POSITION_UNAVAILABLE:
-                        $("#errorMessage").text = "Location information is unavailable."
+                        printErrorMessage.text("Location information is unavailable.");
                         break;
                     case error.TIMEOUT:
-                        $("#errorMessage").text = "The request to get user location timed out."
+                        printErrorMessage("The request to get user location timed out.");
                         break;
                     case error.UNKNOWN_ERROR:
-                        $("#errorMessage").text = "An unknown error occurred."
+                        printErrorMessage("An unknown error occurred.");
                         break;
                 }
             }
@@ -200,7 +199,7 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(getInfoWeather, geolocationErrorHandler);
                 } else {
-                    $('#errorMessage') = "Geolocation is not supported by this browser.";
+                    printErrorMessage("Geolocation is not supported by this browser.");
                 }
             }
 
@@ -213,16 +212,10 @@
         //End Document Ready
 
         //General Functions
-        function assignEmptyValues() {
-            $('#cityCountry').html("");
-            $('#date').html("");
-            $('#temperature').html("");
-            $('#condition').html("");
-            $('#weatherImg').attr("src", "");
-        }
-
+       
         function assignValues(infoWeather) {
-            $("#errorMessage").text("");
+			$('.to-hidde').map(x=> x.attr("hidden","false"));
+            $("#errorMessage").text("");			
             $('#cityCountry').html(infoWeather.cityCountry);
             $('#date').html(infoWeather.date);
 
@@ -262,6 +255,10 @@
             assignTemperature(infoWeather);
         }
 
+		function printErrorMessage(error){
+			$('.to-hidde').map(x=> x.attr("hidden","true"))
+			$("#errorMessage").text(error);			
+		}
         //End General Functions
 
     </script>
@@ -326,18 +323,18 @@
             color: blue !important;
         }
 
-        @media only screen and (max-width: 500px) {
+        /*@media only screen and (max-width: 500px) {
             .container-box {
                 font-size: 1.5em;
                 max-width: 300px;
                 height: 100%:;
             }
-
-            body {
-                background-color: blue;
-                height: 100%;
-            }
         }
+		*/
+		.text-inside-box{
+		    word-break: break-all;
+			margin: 5% 5% 5% 5%;
+		}
     </style>
 </head>
 <body>
@@ -345,29 +342,28 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="row">
-                    <p id="errorMessage" class="text-danger"></p>
-                    <div id="cityCountry"></div>
-                </div>
-                <div class="hidden" id="date"></div>
+                    <p id="errorMessage" class="text-danger text-inside-box"></p>
+                    <div id="cityCountry" class="to-hidde"></div>
+                </div>                
                 <div class="row" style="display:inline-block">
-                    <img style="height:64px;width:64px; float:left" id="weatherImg">
+                    <img style="height:64px;width:64px; float:left" id="weatherImg" class="to-hidde">
                     <div style="padding-left:10px;float:right">
                         <div style="float:left;margin-top:6px">
-                            <span id="temperature" class="celsius">
+                            <span id="temperature" class="celsius to-hidde">
                             </span>
                         </div>
                         <div style="float:right;font-size: 0.6em;margin-top:6px">
-                            <a id="celsiusUnit" class="active">°C</a>
-                            <span style="opacity:0.54">&nbsp;|&nbsp;</span>
-                            <a id="fahrenheitUnit" href="#">°F</a>
+                            <a id="celsiusUnit" class="active to-hidde">°C</a>
+                            <span style="opacity:0.54" class="to-hidde">&nbsp;|&nbsp;</span>
+                            <a id="fahrenheitUnit" href="#" class="to-hidde">°F</a>
                         </div>
                     </div>
                 </div>
-                <div id="condition"></div>
+                <div id="condition" class="to-hidde"></div>
                 <div class="row" style="display:inline-block">
-                    <div id="lowTemperature" style="float:left"></div>
-                    <span>&nbsp;/&nbsp;</span>
-                    <div id="highTemperature" style="float:right"></div>
+                    <div id="lowTemperature" style="float:left" class="to-hidde"></div>
+                    <span class="to-hidde">&nbsp;/&nbsp;</span>
+                    <div id="highTemperature" style="float:right" class="to-hidde"></div>
                 </div>
                 <div class="row">
                     <a id="btnRefresh" class="btn btn-lg">
