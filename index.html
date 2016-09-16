@@ -30,7 +30,7 @@
             this.low = "";
             this.high = "";
 
-            this.buildQuery = function (infoWeather) {
+            (function (infoWeather) {
                 var text ="";
                 
                 if(infoWeather.latitude!== "" && infoWeather.longitude!==""){
@@ -41,7 +41,7 @@
                 }
 
                 this.query.replace("{TEXT}", text);
-            }(this);
+            })(this);
             
             var getWeather = function (infoWeather) {
                 return $.ajax({
