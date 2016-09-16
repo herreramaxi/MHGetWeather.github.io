@@ -12,30 +12,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script>
-        //Location
-        function Location() {
-            var url = 'https://crossorigin.me/http://ip-api.com/json';
-            this.city = "";
-            this.country = "";
-
-            var getLocation = function (location) {
-                return $.getJSON(url).then(function (data) {
-                    location.city = data.city;
-                    location.country = data.country;
-
-                    return location;
-                });
-            };
-
-            this.getLocation = function () {
-                return getLocation(this)
-            };
-        };
-
+      
         //InfoWeather
-        function InfoWeather(city, country) {
+        function InfoWeather(latitude, longitude) {
             this.url = "https://query.yahooapis.com/v1/public/yql";
-            this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"" + city + ", " + country + "\") and u= \"C\"";
+            //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"" + city + ", " + country + "\") and u= \"C\"";
+            this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"{TEXT}\") and u= \"C\"";
             this.city = "";
             this.country = "";
             this.cityCountry = "";
@@ -48,6 +30,19 @@
             this.low = "";
             this.high = "";
 
+            this.buildQuery = function (infoWeather) {
+                var text ="";
+                
+                if(infoWeather.latitude!== "" && infoWeather.longitude!==""){
+                    text =  "("+infoWeather.latitude+"," +infoWeather.longitude+")";
+                }
+                else{
+                    text =  infoWeather.city + "," +infoWeather.country;
+                }
+
+                this.query.replace("{TEXT}", text);
+            }(this);
+            
             var getWeather = function (infoWeather) {
                 return $.ajax({
                     url: infoWeather.url,
@@ -97,7 +92,7 @@
             }
 
             var weatherImages = [
-                new ConditionCodes(0, "tornado", "http://c3.staticflickr.com/8/7596/16199403314_1cf0cd0d0f_c.jpg"),
+                new ConditionCodes(0, "tornado", "https://c3.staticflickr.com/8/7596/16199403314_1cf0cd0d0f_c.jpg"),
                 new ConditionCodes(1, "tropical storm", "https://c7.staticflickr.com/9/8388/8505828222_6790d72300_c.jpg"),
                 new ConditionCodes(2, "hurricane", "https://c7.staticflickr.com/5/4077/4786315382_6eef785848_z.jpg"),
                 new ConditionCodes(3, "severe thunderstorms", "https://c5.staticflickr.com/9/8631/15847204276_971bd78b61_c.jpg"),
@@ -162,22 +157,47 @@
                 getWeather();
             });
 
-            function getWeather() {
-                var location = new Location();
-                location.getLocation()
-                    .done(location => {
-                        infoWeather = new InfoWeather(location.city, location.country);
-                        infoWeather.getWeather()
-                            .done(x=> assignValues(x))
-                            .fail(function (jqxhr, textStatus, error) {
-                                assignEmptyValues();
-                                $("#errorMessage").text("Error getting weather information");
-                            });
-                    })
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    x.innerHTML = "Geolocation is not supported by this browser.";
+                }
+            }
+
+            function getInfoWeather(position) {
+                infoWeather = new InfoWeather(position.coords.latitude, position.coords.longitude);
+                infoWeather.getWeather()
+                    .done(x=> assignValues(x))
                     .fail(function (jqxhr, textStatus, error) {
                         assignEmptyValues();
                         $("#errorMessage").text("Error getting weather information");
                     });
+            }
+
+            function geolocationErrorHandler(error) {
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        $("#errorMessage").text = "User denied the request for Geolocation."
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        $("#errorMessage").text = "Location information is unavailable."
+                        break;
+                    case error.TIMEOUT:
+                        $("#errorMessage").text = "The request to get user location timed out."
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        $("#errorMessage").text = "An unknown error occurred."
+                        break;
+                }
+            }
+
+            function getWeather() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(getInfoWeather, geolocationErrorHandler);
+                } else {
+                    $('#errorMessage') = "Geolocation is not supported by this browser.";
+                }
             }
 
             getWeather();
@@ -361,7 +381,6 @@
             <a href="https://www.linkedin.com/in/maximiliano-herrera-bocchicchio-79bba615" target="_blank" rel="noopener noreferrer"><i class="fa fa-linkedin"></i></a>
             <a href="https://www.freecodecamp.com/herreramaxi" target="_blank" rel="noopener noreferrer"><i class="fa fa-fire"></i></a>
             <a href="https://codepen.io/herreramaxi/pens/public/" target="_blank" rel="noopener noreferrer"><i class="fa fa-codepen"></i></a>
-
             <!--noopener: Requires that any browsing context created by following the hyperlink must not have an opener browsing context-->
             <!--noreferrer: Requires that the browser should not send an HTTP referer header if the user follows the hyperlink-->
         </div>

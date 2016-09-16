@@ -1,0 +1,25 @@
+    //Location
+        function Location() {
+            var url = 'https://crossorigin.me/http://ip-api.com/json';
+            this.city = "";
+            this.country = "";
+			this.latitude= "";
+			this.longitude= "";
+			
+            var getLocation = function (location) {
+			
+			
+                return $.getJSON(url).then(function (data) {
+                    location.city = data.city;
+                    location.country = data.country;
+
+                    return location;
+                });
+            };
+
+            this.getLocation = function () {
+                return getLocation(this)
+            };
+        };
+
+	
