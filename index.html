@@ -30,7 +30,7 @@
             this.low = "";
             this.high = "";
 
-            (function (infoWeather) {
+            var buildQuery = function (infoWeather) {
                 var text ="";
                 
                 if(infoWeather.latitude!== "" && infoWeather.longitude!==""){
@@ -40,9 +40,11 @@
                     text =  infoWeather.city + "," +infoWeather.country;
                 }
 
-                this.query.replace("{TEXT}", text);
-            })(this);
+                infoWeather.query.replace("{TEXT}", text);
+            }
             
+			buildQuery(this);
+			
             var getWeather = function (infoWeather) {
                 return $.ajax({
                     url: infoWeather.url,
