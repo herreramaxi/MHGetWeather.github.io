@@ -42,7 +42,7 @@
                     text =  infoWeather.city + "," +infoWeather.country;
                 }
 
-                infoWeather.query.replace("{TEXT}", text);
+                infoWeather.query = infoWeather.query.replace("{TEXT}", text);
             }
             
 			buildQuery(this);
