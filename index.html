@@ -214,7 +214,7 @@
         //General Functions
        
         function assignValues(infoWeather) {
-			$('.to-hidde').map(x=> x.attr("hidden","false"));
+			$('.to-hidde').removeAttr("hidden");
             $("#errorMessage").text("");			
             $('#cityCountry').html(infoWeather.cityCountry);
             $('#date').html(infoWeather.date);
@@ -256,7 +256,7 @@
         }
 
 		function printErrorMessage(error){
-			$('.to-hidde').map(x=> x.attr("hidden","true"));
+			$('.to-hidde').attr("hidden","true");
 			$("#errorMessage").text(error);			
 		}
         //End General Functions
