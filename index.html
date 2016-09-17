@@ -12,7 +12,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script>
-      
+
         //InfoWeather
         function InfoWeather(latitude, longitude) {
             this.url = "https://query.yahooapis.com/v1/public/yql";
@@ -29,24 +29,24 @@
             this.urlWeatherImage = "";
             this.low = "";
             this.high = "";
-			this.latitude = latitude;
-			this.longitude = longitude;
-			
+            this.latitude = latitude;
+            this.longitude = longitude;
+
             var buildQuery = function (infoWeather) {
-                var text ="";
-                
-                if(infoWeather.latitude!== "" && infoWeather.longitude!==""){
-                    text =  "("+infoWeather.latitude+"," +infoWeather.longitude+")";
+                var text = "";
+
+                if (infoWeather.latitude !== "" && infoWeather.longitude !== "") {
+                    text = "(" + infoWeather.latitude + "," + infoWeather.longitude + ")";
                 }
-                else{
-                    text =  infoWeather.city + "," +infoWeather.country;
+                else {
+                    text = infoWeather.city + "," + infoWeather.country;
                 }
 
                 infoWeather.query = infoWeather.query.replace("{TEXT}", text);
             }
-            
-			buildQuery(this);
-			
+
+            buildQuery(this);
+
             var getWeather = function (infoWeather) {
                 return $.ajax({
                     url: infoWeather.url,
@@ -165,7 +165,7 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(showPosition, geolocationErrorHandler);
                 } else {
-                   printErrorMessage("Geolocation is not supported by this browser.");				    
+                    printErrorMessage("Geolocation is not supported by this browser.");
                 }
             }
 
@@ -173,7 +173,7 @@
                 infoWeather = new InfoWeather(position.coords.latitude, position.coords.longitude);
                 infoWeather.getWeather()
                     .done(x=> assignValues(x))
-                    .fail(function (jqxhr, textStatus, error) {                        
+                    .fail(function (jqxhr, textStatus, error) {
                         printErrorMessage("Error getting weather information");
                     });
             }
@@ -212,10 +212,10 @@
         //End Document Ready
 
         //General Functions
-       
+
         function assignValues(infoWeather) {
-			$('.to-hidde').removeAttr("hidden");
-            $("#errorMessage").text("");			
+            $('.to-hidde').removeAttr("hidden");
+            $("#errorMessage").text("");
             $('#cityCountry').html(infoWeather.cityCountry);
             $('#date').html(infoWeather.date);
 
@@ -255,10 +255,10 @@
             assignTemperature(infoWeather);
         }
 
-		function printErrorMessage(error){
-			$('.to-hidde').attr("hidden","true");
-			$("#errorMessage").text(error);			
-		}
+        function printErrorMessage(error) {
+            $('.to-hidde').attr("hidden", "true");
+            $("#errorMessage").text(error);
+        }
         //End General Functions
 
     </script>
@@ -323,17 +323,22 @@
             color: blue !important;
         }
 
+        .text-inside-box {
+            word-break: break-all;
+            margin: 5% 5% 5% 5%;
+        }
+
         @media only screen and (max-width: 500px) {
             .container-box {
                 font-size: 1.5em;
                 max-width: 300px;
-                height: 100%:;
+                height: 100%;
             }
-        }		
-		.text-inside-box{
-		    word-break: break-all;
-			margin: 5% 5% 5% 5%;
-		}
+
+            .text-footer {
+                font-size: 0.9em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -343,7 +348,7 @@
                 <div class="row">
                     <p id="errorMessage" class="text-danger text-inside-box"></p>
                     <div id="cityCountry" class="to-hidde"></div>
-                </div>                
+                </div>
                 <div class="row" style="display:inline-block">
                     <img style="height:64px;width:64px; float:left" id="weatherImg" class="to-hidde">
                     <div style="padding-left:10px;float:right">
