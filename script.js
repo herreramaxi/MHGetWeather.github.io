@@ -144,55 +144,50 @@ $(document).ready(function () {
         getWeather();
     });
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, geolocationErrorHandler);
-        } else {
-            printErrorMessage("Geolocation is not supported by this browser.");
-        }
-    }
-
-    function getInfoWeather(position) {
-        infoWeather = new InfoWeather(position.coords.latitude, position.coords.longitude);
-        infoWeather.getWeather()
-            .done(x=> assignValues(x))
-            .fail(function (jqxhr, textStatus, error) {
-                printErrorMessage("Error getting weather information");
-            });
-    }
-
-    function geolocationErrorHandler(error) {
-        switch (error.code) {
-            case error.PERMISSION_DENIED:
-                printErrorMessage("User denied the request for Geolocation.");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                printErrorMessage("Location information is unavailable.");
-                break;
-            case error.TIMEOUT:
-                printErrorMessage("The request to get user location timed out.");
-                break;
-            case error.UNKNOWN_ERROR:
-                printErrorMessage("An unknown error occurred.");
-                break;
-        }
-    }
-
-    function getWeather() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(getInfoWeather, geolocationErrorHandler);
-        } else {
-            printErrorMessage("Geolocation is not supported by this browser.");
-        }
-    }
-
-    getWeather();
+     getWeather();
 
     $('#fahrenheitUnit').on("click", fahrenheitOnClick);
     $('#celsiusUnit').on("click", celsiusOnClick);
 });
-
 //End Document Ready
+
+//GetWeather functions
+
+function getWeather() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(getInfoWeather, geolocationErrorHandler);
+    } else {
+        printErrorMessage("Geolocation is not supported by this browser.");
+    }
+}
+
+function getInfoWeather(position) {
+    infoWeather = new InfoWeather(position.coords.latitude, position.coords.longitude);
+    infoWeather.getWeather()
+        .done(x=> assignValues(x))
+        .fail(function (jqxhr, textStatus, error) {
+            printErrorMessage("Error getting weather information");
+        });
+}
+
+function geolocationErrorHandler(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            printErrorMessage("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            printErrorMessage("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            printErrorMessage("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            printErrorMessage("An unknown error occurred.");
+            break;
+    }
+}
+
+//GetWeather functions end
 
 //General Functions
 
