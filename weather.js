@@ -72,7 +72,8 @@ function InfoWeather(latitude, longitude) {
 
 	return $.ajax({
             url:  "https://samples.openweathermap.org/data/2.5/weather?lat=53.349804&lon=-6.260310&appid=GGWcKKX6TAmsh1JEjHvONH6A68XHp1ZVzSQjsn9lfsx11tUKGz",
-            // jsonp: "callback",
+            "crossDomain": true,
+			// jsonp: "callback",
             // dataType: "jsonp",
             // data: {
                 // q: infoWeather.query,
