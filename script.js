@@ -65,7 +65,8 @@ function assignValues(infoWeather) {
 
     $('#condition').html(infoWeather.condition);
     $('#weatherImg').attr("src", infoWeather.urlimg);
-    $('body').css("background-image", 'url(' + infoWeather.urlWeatherImage + ')');
+   $('body').css("background-image", 'url("https://c7.staticflickr.com/9/8388/8505828222_6790d72300_c.jpg")');
+   // $('body').css("background-image", 'url(' + infoWeather.urlWeatherImage + ')');
 }
 
 function assignTemperature(infoWeather) {

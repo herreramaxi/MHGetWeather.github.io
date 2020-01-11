@@ -1,8 +1,10 @@
 //InfoWeather
+var pepito= "pp"
 function InfoWeather(latitude, longitude) {
-    this.url = "https://query.yahooapis.com/v1/public/yql";
+	this.url ="http://api.openweathermap.org/data/2.5/weather?APPID=1045a52b98b3f1ae82fac266ef097dbd";
     //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"" + city + ", " + country + "\") and u= \"C\"";
-    this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"{TEXT}\") and u= \"C\"";
+    //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"{TEXT}\") and u= \"C\"";
+	this.query = "?lat={LATITUDE}&lon={LONGITUDE}";
     this.city = "";
     this.country = "";
     this.cityCountry = "";
@@ -21,65 +23,19 @@ function InfoWeather(latitude, longitude) {
         var text = "";
 
         if (infoWeather.latitude !== "" && infoWeather.longitude !== "") {
-            text = "(" + infoWeather.latitude + "," + infoWeather.longitude + ")";
+            infoWeather.query = infoWeather.query.replace("{LATITUDE}", infoWeather.latitude);
+			infoWeather.query = infoWeather.query.replace("{LONGITUDE}", infoWeather.longitude);
         }
         else {
             text = infoWeather.city + "," + infoWeather.country;
-        }
+        }       
 
-        infoWeather.query = infoWeather.query.replace("{TEXT}", text);
+		console.log("buildQuery: " +infoWeather.query);
     }
 
     buildQuery(this);
-
-	var getWeather = function (infoWeather) {
-		//Testing oauth on yahoo API
-			
-	var url = 'https://weather-ydn-yql.media.yahoo.com/forecastrss';
-	var method = 'GET';
-	var app_id = 'anJvMP76';
-	var consumer_key = 'dj0yJmk9ZkpyeTg4aDJ0N2RNJmQ9WVdrOVlXNUtkazFRTnpZbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTNh';
-	var consumer_secret = 'b418ae1c47ae6fcc8840bab13f0e566cf568b5ed';
-	var concat = '&';	
-	var query = {'location': 'sunnyvale,ca', 'format': 'json'};	
-	var oauth = {	
-		'oauth_consumer_key': consumer_key,	
-		'oauth_nonce': Math.random().toString(36).substring(2),	
-		'oauth_signature_method': 'HMAC-SHA1',	
-		'oauth_timestamp': parseInt(new Date().getTime() / 1000).toString(),	
-		'oauth_version': '1.0'	
-	};	
-
-	var merged = {}; 	
-	$.extend(merged, query, oauth);	
-	// Note the sorting here is required	
-	var merged_arr = Object.keys(merged).sort().map(function(k) {	
-	  return [k + '=' + encodeURIComponent(merged[k])];	
-	});	
-	var signature_base_str = method	
-	  + concat + encodeURIComponent(url)	
-	  + concat + encodeURIComponent(merged_arr.join(concat));	
-	var composite_key = encodeURIComponent(consumer_secret) + concat;	
-	var hash = CryptoJS.HmacSHA1(signature_base_str, composite_key);	
-	var signature = hash.toString(CryptoJS.enc.Base64);	
-	oauth['oauth_signature'] = signature;	
-	var auth_header = 'OAuth ' + Object.keys(oauth).map(function(k) {	
-	  return [k + '="' + oauth[k] + '"'];	
-	}).join(',');	
-	$.ajax({	
-	  url: url + '?' + $.param(query),	
-	  headers: {	
-		'Authorization': auth_header,	
-		'X-Yahoo-App-Id': app_id 	
-	  },	
-	  method: 'GET',	
-	  success: function(data){	
-		console.log(data);	
-	  }
-	});
-	}
 	
-    var getWeather2 = function (infoWeather) {
+    var getWeatherYahooOld = function (infoWeather) {
         return $.ajax({
             url: infoWeather.url,
             jsonp: "callback",
@@ -106,6 +62,51 @@ function InfoWeather(latitude, longitude) {
         });
     }
 
+	var getWeather = function (infoWeather){
+		 var settings = {
+		"async": true,
+		"crossDomain": true,
+		"url": "https://samples.openweathermap.org/data/2.5/weather?lat=53.349804&lon=-6.260310&appid=GGWcKKX6TAmsh1JEjHvONH6A68XHp1ZVzSQjsn9lfsx11tUKGz",
+		//"url": this.url + this.query,
+		"method": "GET"};
+
+	return $.ajax({
+            url:  "https://samples.openweathermap.org/data/2.5/weather?lat=53.349804&lon=-6.260310&appid=GGWcKKX6TAmsh1JEjHvONH6A68XHp1ZVzSQjsn9lfsx11tUKGz",
+            // jsonp: "callback",
+            // dataType: "jsonp",
+            // data: {
+                // q: infoWeather.query,
+                // format: "json"
+            // }
+			"method": "GET"       
+			})	
+	.then(function (response) {
+		pepito = response;
+		console.log(response);
+		console.log("test");
+		return infoWeather;
+	});
+	}
+	
+	var getWeather2 = function (infoWeather) {
+		
+		
+		var settings = {
+	"async": true,
+	"crossDomain": true,
+	"url": "https://community-open-weather-map.p.rapidapi.com/weather?callback=test&q=Dublin",
+	"method": "GET",
+	"headers": {
+		"x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
+		"x-rapidapi-key": "69b5e2598fmsh473f8f32041f929p1278bfjsn290058b3d5fe"
+	}
+}
+
+$.ajax(settings).done(function (response) {
+	console.log(response);
+	});}
+
+	
     this.getWeather = function () { return getWeather(this); }
 
     var getUrlImg = function (response) {
