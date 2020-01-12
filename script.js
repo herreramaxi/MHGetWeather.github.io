@@ -8,7 +8,7 @@ $(document).ready(function () {
         getWeather();
     });
 
-     getWeather();
+    getWeather();
 
     $('#fahrenheitUnit').on("click", fahrenheitOnClick);
     $('#celsiusUnit').on("click", celsiusOnClick);
@@ -28,7 +28,7 @@ function getWeather() {
 function getInfoWeather(position) {
     infoWeather = new InfoWeather(position.coords.latitude, position.coords.longitude);
     infoWeather.getWeather()
-        .done(x=> assignValues(x))
+        .done(x => assignValues(x))
         .fail(function (jqxhr, textStatus, error) {
             printErrorMessage("Error getting weather information");
         });
@@ -63,7 +63,7 @@ function assignValues(infoWeather) {
 
     assignTemperature(infoWeather);
 
-    $('#condition').html(infoWeather.condition);
+    $('#condition').html(infoWeather.condition.description);
     $('#weatherImg').attr("src", infoWeather.urlimg);
     $('body').css("background-image", 'url(' + infoWeather.urlWeatherImage + ')');
 }
