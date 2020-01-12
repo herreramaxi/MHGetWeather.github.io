@@ -37,8 +37,7 @@ function InfoWeather(latitude, longitude) {
 
         return $.ajax(settings).then(function (responseGeodecode) {
 
-            if (responseGeodecode) {
-                console.log(responseGeodecode);
+            if (responseGeodecode) {              
                 var city = responseGeodecode[0];
                 infoWeather.city = city.City;
                 infoWeather.country = city.Country;
@@ -59,13 +58,11 @@ function InfoWeather(latitude, longitude) {
                     }
                 }
 
-                return $.ajax(settings).then(function (response) {
-                    console.log(response);
+                return $.ajax(settings).then(function (response) {                  
                     var date = new Date(response.dt * 1000);
                     var condition = new ConditionCodes(response.weather[0], infoWeather);
 
-                    return condition.getBackgroundUrlImage(infoWeather).then(function (response2) {
-                        console.log(response2);
+                    return condition.getBackgroundUrlImage(infoWeather).then(function (response2) {                        
                         infoWeather.date = date.toLocaleString();
                         infoWeather.temperature = new Temperature(response.main.temp);
                         infoWeather.condition = condition;
@@ -97,13 +94,8 @@ function InfoWeather(latitude, longitude) {
         this.dayOrNight = weatherFromWebApi.icon.charAt(weatherFromWebApi.icon.length - 1).toLowerCase() == 'd' ? 'day' : 'night';
 
         var getBackgroundUrlImage = function (conditionCodes, infoWeather) {
-            var urlImageApi = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=6b319e728b9bc03d6611bcca049137e5&text={QUERY}&format=json&nojsoncallback=1&content_type=1&geo_context=2&tags={TAGS}&media=photos";
-
-            urlImageApi = urlImageApi.replace("{QUERY}", infoWeather.country + " " + conditionCodes.description + ' weather forecast ' + conditionCodes.dayOrNight);
-            //&lat={LATITUDE}&lon={LONGITUDE}
-            // urlImageApi = urlImageApi.replace("{LATITUDE}", infoWeather.latitude);
-            // urlImageApi = urlImageApi.replace("{LONGITUDE}", infoWeather.longitude);
-            urlImageApi = urlImageApi.replace("{TAGS}", infoWeather.country + "," + conditionCodes.description + 'weather,forecast,' + conditionCodes.dayOrNight);
+            var urlImageApi = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=6b319e728b9bc03d6611bcca049137e5&text={QUERY}&format=json&nojsoncallback=1&content_type=1&geo_context=2&media=photos&accuracy=3";
+            urlImageApi = urlImageApi.replace("{QUERY}", infoWeather.country + ", " + conditionCodes.description);           
 
             var settings = {
                 "async": true,
