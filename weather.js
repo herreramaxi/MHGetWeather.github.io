@@ -1,13 +1,14 @@
 //InfoWeather
 var pepito= "pp"
 function InfoWeather(latitude, longitude) {
-	this.url ="http://api.openweathermap.org/data/2.5/weather?APPID=1045a52b98b3f1ae82fac266ef097dbd";
+	this.url ="https://community-open-weather-map.p.rapidapi.com/weather"; //?APPID=1045a52b98b3f1ae82fac266ef097dbd";
     //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"" + city + ", " + country + "\") and u= \"C\"";
     //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"{TEXT}\") and u= \"C\"";
-	this.query = "?lat={LATITUDE}&lon={LONGITUDE}";
+	this.query = "?q={CITY-COUNTRY}&units=metrics";
     this.city = "";
     this.country = "";
     this.cityCountry = "";
+	this.CountryId = "";
     this.date = "";
     this.temperature = "";
     this.condition = "";
@@ -23,8 +24,35 @@ function InfoWeather(latitude, longitude) {
         var text = "";
 
         if (infoWeather.latitude !== "" && infoWeather.longitude !== "") {
-            infoWeather.query = infoWeather.query.replace("{LATITUDE}", infoWeather.latitude);
-			infoWeather.query = infoWeather.query.replace("{LONGITUDE}", infoWeather.longitude);
+            // infoWeather.query = infoWeather.query.replace("{LATITUDE}", infoWeather.latitude);
+			// infoWeather.query = infoWeather.query.replace("{LONGITUDE}", infoWeather.longitude);
+			
+			var url = "https://geocodeapi.p.rapidapi.com/GetNearestCities?latitude={LATITUDE}&longitude={LONGITUDE}&range=0";
+			url = url.replace("{LATITUDE}", infoWeather.latitude);
+			url = url.replace("{LONGITUDE}", infoWeather.longitude);
+			
+			var settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": url,
+			"method": "GET",
+			"headers": {
+				"x-rapidapi-host": "geocodeapi.p.rapidapi.com",
+				"x-rapidapi-key": "69b5e2598fmsh473f8f32041f929p1278bfjsn290058b3d5fe"
+				}
+			}
+
+			$.ajax(settings).done(function (response) {
+				console.log(response);
+				var city = response[0];
+				infoWeather.city = city.City;
+				infoWeather.Country = city.Country;	
+				infoWeather.CountryId = city.CountryId;
+				
+				var cityCountry = city.City + ',' + city.CountryId;
+				
+				infoWeather.query = infoWeather.query.replace("{CITY-COUNTRY}", cityCountry);
+			});
         }
         else {
             text = infoWeather.city + "," + infoWeather.country;
@@ -33,80 +61,38 @@ function InfoWeather(latitude, longitude) {
 		console.log("buildQuery: " +infoWeather.query);
     }
 
-    buildQuery(this);
+    buildQuery(this);	
 	
-    var getWeatherYahooOld = function (infoWeather) {
-        return $.ajax({
-            url: infoWeather.url,
-            jsonp: "callback",
-            dataType: "jsonp",
-            data: {
-                q: infoWeather.query,
-                format: "json"
-            }
-        })
-        .then(function (response) {
-            infoWeather.city = response.query.results.channel.location.city;
+		var getWeather = function (infoWeather){
+				
+				var settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": infoWeather.url + infoWeather.query,//"https://community-open-weather-map.p.rapidapi.com/weather?lat=53.349804&lon=-6.260310&callback=test&units=%2522metric%2522%20or%20%2522imperial%2522&mode=xml%252C%20html&q=Dublin",
+			"method": "GET",
+			"headers": {
+				"x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
+				"x-rapidapi-key": "69b5e2598fmsh473f8f32041f929p1278bfjsn290058b3d5fe"
+			}
+		}
+
+		return $.ajax(settings).done(function (response) {
+			console.log(response);
+			infoWeather.city = response.query.results.channel.location.city;
             infoWeather.country = response.query.results.channel.location.country;
             infoWeather.cityCountry = infoWeather.city + ", " + infoWeather.country;
             infoWeather.date = response.query.results.channel.item.condition.date;
             infoWeather.temperature = new Temperature(response.query.results.channel.item.condition.temp);
-            infoWeather.condition = response.query.results.channel.item.condition.text;
-            infoWeather.conditionCode = response.query.results.channel.item.condition.code;
-            infoWeather.urlWeatherImage = weatherImages[infoWeather.conditionCode].urlImg;
-            infoWeather.urlimg = getUrlImg(response);
+            // infoWeather.condition = response.query.results.channel.item.condition.text;
+            // infoWeather.conditionCode = response.query.results.channel.item.condition.code;
+            // infoWeather.urlWeatherImage = weatherImages[infoWeather.conditionCode].urlImg;
+            // infoWeather.urlimg = getUrlImg(response);
             infoWeather.low = new Temperature(response.query.results.channel.item.forecast[0].low);
             infoWeather.high = new Temperature(response.query.results.channel.item.forecast[0].high);
 
-            return infoWeather;
-        });
-    }
-
-	var getWeather = function (infoWeather){
-		 var settings = {
-		"async": true,
-		"crossDomain": true,
-		"url": "https://samples.openweathermap.org/data/2.5/weather?lat=53.349804&lon=-6.260310&appid=GGWcKKX6TAmsh1JEjHvONH6A68XHp1ZVzSQjsn9lfsx11tUKGz",
-		//"url": this.url + this.query,
-		"method": "GET"};
-
-	return $.ajax({
-            url:  "https://samples.openweathermap.org/data/2.5/weather?lat=53.349804&lon=-6.260310&appid=GGWcKKX6TAmsh1JEjHvONH6A68XHp1ZVzSQjsn9lfsx11tUKGz",
-            "crossDomain": true,
-			// jsonp: "callback",
-            // dataType: "jsonp",
-            // data: {
-                // q: infoWeather.query,
-                // format: "json"
-            // }
-			"method": "GET"       
-			})	
-	.then(function (response) {
-		pepito = response;
-		console.log(response);
-		console.log("test");
-		return infoWeather;
-	});
-	}
-	
-	var getWeather2 = function (infoWeather) {
-		
-		
-		var settings = {
-	"async": true,
-	"crossDomain": true,
-	"url": "https://community-open-weather-map.p.rapidapi.com/weather?callback=test&q=Dublin",
-	"method": "GET",
-	"headers": {
-		"x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
-		"x-rapidapi-key": "69b5e2598fmsh473f8f32041f929p1278bfjsn290058b3d5fe"
-	}
-}
-
-$.ajax(settings).done(function (response) {
-	console.log(response);
-	});}
-
+			
+			return infoWeather;
+		});}
 	
     this.getWeather = function () { return getWeather(this); }
 

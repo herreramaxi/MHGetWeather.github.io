@@ -10,10 +10,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/hmac.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/sha1.js"></script>
-
+	
     <script src="script.js"></script>
 	<script src="weather.js"></script>	
 </head>
@@ -22,15 +19,14 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="row">
-                    <p id="errorMessage" class="text-danger text-inside-box">error</p>
-                    <div id="cityCountry" class="to-hidde">citycountry</div>
+                    <p id="errorMessage" class="text-danger text-inside-box"></p>
+                    <div id="cityCountry" class="to-hidde"></div>
                 </div>
                 <div class="row" style="display:inline-block">
                     <img style="height:64px;width:64px; float:left" id="weatherImg" src="http://openweathermap.org/img/wn/01d@2x.png" class="to-hidde">
                     <div style="padding-left:10px;float:right">
                         <div style="float:left;margin-top:6px">
-                            <span id="temperature" class="celsius to-hidde">20
-                            </span>
+                            <span id="temperature" class="celsius to-hidde"></span>
                         </div>
                         <div style="float:right;font-size: 0.6em;margin-top:6px">
                             <a id="celsiusUnit" class="active to-hidde">°C</a>
@@ -39,11 +35,11 @@
                         </div>
                     </div>
                 </div>
-                <div id="condition" class="to-hidde">condition</div>
+                <div id="condition" class="to-hidde"></div>
                 <div class="row" style="display:inline-block">
-                    <div id="lowTemperature" style="float:left" class="to-hidde">23</div>
+                    <div id="lowTemperature" style="float:left" class="to-hidde"></div>
                     <span class="to-hidde">&nbsp;/&nbsp;</span>
-                    <div id="highTemperature" style="float:right" class="to-hidde">25</div>
+                    <div id="highTemperature" style="float:right" class="to-hidde"></div>
                 </div>
                 <div class="row">
                     <a id="btnRefresh" class="btn btn-lg">
