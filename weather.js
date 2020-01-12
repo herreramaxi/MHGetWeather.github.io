@@ -1,14 +1,14 @@
 //InfoWeather
-var pepito= "pp"
 function InfoWeather(latitude, longitude) {
 	this.url ="https://community-open-weather-map.p.rapidapi.com/weather"; //?APPID=1045a52b98b3f1ae82fac266ef097dbd";
     //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"" + city + ", " + country + "\") and u= \"C\"";
     //this.query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"{TEXT}\") and u= \"C\"";
-	this.query = "?q={CITY-COUNTRY}&units=metrics";
+	this.query = "?q={CITY-COUNTRY}&units=metric";
     this.city = "";
     this.country = "";
     this.cityCountry = "";
-	this.CountryId = "";
+	this.cityCountryId = "";
+	this.countryId = "";
     this.date = "";
     this.temperature = "";
     this.condition = "";
@@ -20,13 +20,50 @@ function InfoWeather(latitude, longitude) {
     this.latitude = latitude;
     this.longitude = longitude;
 
-    var buildQuery = function (infoWeather) {
-        var text = "";
+    // var buildQuery = function (infoWeather) {
+        // var text = "";
 
-        if (infoWeather.latitude !== "" && infoWeather.longitude !== "") {
-            // infoWeather.query = infoWeather.query.replace("{LATITUDE}", infoWeather.latitude);
-			// infoWeather.query = infoWeather.query.replace("{LONGITUDE}", infoWeather.longitude);
+        // if (infoWeather.latitude !== "" && infoWeather.longitude !== "") {
+            // // infoWeather.query = infoWeather.query.replace("{LATITUDE}", infoWeather.latitude);
+			// // infoWeather.query = infoWeather.query.replace("{LONGITUDE}", infoWeather.longitude);
 			
+			// var url = "https://geocodeapi.p.rapidapi.com/GetNearestCities?latitude={LATITUDE}&longitude={LONGITUDE}&range=0";
+			// url = url.replace("{LATITUDE}", infoWeather.latitude);
+			// url = url.replace("{LONGITUDE}", infoWeather.longitude);
+			
+			// var settings = {
+			// "async": true,
+			// "crossDomain": true,
+			// "url": url,
+			// "method": "GET",
+			// "headers": {
+				// "x-rapidapi-host": "geocodeapi.p.rapidapi.com",
+				// "x-rapidapi-key": "69b5e2598fmsh473f8f32041f929p1278bfjsn290058b3d5fe"
+				// }
+			// }
+
+			// return $.ajax(settings).done(function (response) {
+				// console.log(response);
+				// var city = response[0];
+				// infoWeather.city = city.City;
+				// infoWeather.Country = city.Country;	
+				// infoWeather.CountryId = city.CountryId;
+				
+				// var cityCountry = city.City + ',' + city.CountryId;
+				
+				// infoWeather.query = infoWeather.query.replace("{CITY-COUNTRY}", cityCountry);
+				
+				// console.log("buildQuery: " + infoWeather.query);
+			// });
+        // }
+        // else {
+			// console.log("Error when building query");
+            // // text = infoWeather.city + "," + infoWeather.country;
+        // }    
+    // }
+    
+	 var getWeatherFrom = function (infoWeather){			
+				
 			var url = "https://geocodeapi.p.rapidapi.com/GetNearestCities?latitude={LATITUDE}&longitude={LONGITUDE}&range=0";
 			url = url.replace("{LATITUDE}", infoWeather.latitude);
 			url = url.replace("{LONGITUDE}", infoWeather.longitude);
@@ -42,59 +79,56 @@ function InfoWeather(latitude, longitude) {
 				}
 			}
 
-			$.ajax(settings).done(function (response) {
-				console.log(response);
-				var city = response[0];
+			return $.ajax(settings).then(function(responseGeodecode){
+			
+			if(responseGeodecode){
+				console.log(responseGeodecode);
+				var city = responseGeodecode[0];				
 				infoWeather.city = city.City;
-				infoWeather.Country = city.Country;	
-				infoWeather.CountryId = city.CountryId;
+				infoWeather.country = city.Country;	
+				infoWeather.countryId = city.CountryId;
+				infoWeather.cityCountry = city.City + ',' + city.Country;
+				infoWeather.cityCountryId = city.City + ',' + city.CountryId;
 				
-				var cityCountry = city.City + ',' + city.CountryId;
-				
-				infoWeather.query = infoWeather.query.replace("{CITY-COUNTRY}", cityCountry);
-			});
-        }
-        else {
-            text = infoWeather.city + "," + infoWeather.country;
-        }       
-
-		console.log("buildQuery: " +infoWeather.query);
-    }
-
-    buildQuery(this);	
-	
-		var getWeather = function (infoWeather){
+				infoWeather.query = infoWeather.query.replace("{CITY-COUNTRY}", infoWeather.cityCountryId);
 				
 				var settings = {
 			"async": true,
 			"crossDomain": true,
-			"url": infoWeather.url + infoWeather.query,//"https://community-open-weather-map.p.rapidapi.com/weather?lat=53.349804&lon=-6.260310&callback=test&units=%2522metric%2522%20or%20%2522imperial%2522&mode=xml%252C%20html&q=Dublin",
+			"url": infoWeather.url + infoWeather.query,
 			"method": "GET",
 			"headers": {
 				"x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
 				"x-rapidapi-key": "69b5e2598fmsh473f8f32041f929p1278bfjsn290058b3d5fe"
+				}
 			}
-		}
-
-		return $.ajax(settings).done(function (response) {
+			
+			return  $.ajax(settings).then(function (response) {
+				 var date = new Date(response.dt * 1000);
+				 
 			console.log(response);
-			infoWeather.city = response.query.results.channel.location.city;
-            infoWeather.country = response.query.results.channel.location.country;
-            infoWeather.cityCountry = infoWeather.city + ", " + infoWeather.country;
-            infoWeather.date = response.query.results.channel.item.condition.date;
-            infoWeather.temperature = new Temperature(response.query.results.channel.item.condition.temp);
+			// infoWeather.city = response.query.results.channel.location.city;
+            // infoWeather.country = response.query.results.channel.location.country;
+            // infoWeather.cityCountry = infoWeather.city + ", " + infoWeather.country;
+            infoWeather.date = date.toLocaleString();
+            infoWeather.temperature = new Temperature(response.main.temp);
             // infoWeather.condition = response.query.results.channel.item.condition.text;
             // infoWeather.conditionCode = response.query.results.channel.item.condition.code;
             // infoWeather.urlWeatherImage = weatherImages[infoWeather.conditionCode].urlImg;
             // infoWeather.urlimg = getUrlImg(response);
-            infoWeather.low = new Temperature(response.query.results.channel.item.forecast[0].low);
-            infoWeather.high = new Temperature(response.query.results.channel.item.forecast[0].high);
-
+            infoWeather.low = new Temperature(response.main.temp_min);
+            infoWeather.high = new Temperature(response.main.temp_max);
 			
 			return infoWeather;
-		});}
+			});
+			}
+			else{
+				console.log("Error on responseGeodecode");
+			}
+		});		
+	}
 	
-    this.getWeather = function () { return getWeather(this); }
+    this.getWeather = function () { return getWeatherFrom(this); }
 
     var getUrlImg = function (response) {
         var token = "<![CDATA[<img src=\"";
