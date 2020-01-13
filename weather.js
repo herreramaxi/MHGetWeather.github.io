@@ -42,7 +42,7 @@ function InfoWeather(latitude, longitude) {
                 infoWeather.city = city.City;
                 infoWeather.country = city.Country;
                 infoWeather.countryId = city.CountryId;
-                infoWeather.cityCountry = city.City + ',' + city.Country;
+                infoWeather.cityCountry = city.City + ', ' + city.Country;
                 infoWeather.cityCountryId = city.City + ',' + city.CountryId;
 
                 infoWeather.query = infoWeather.query.replace("{CITY-COUNTRY}", infoWeather.cityCountryId);
@@ -63,7 +63,7 @@ function InfoWeather(latitude, longitude) {
                     var condition = new ConditionCodes(response.weather[0], infoWeather);
 
                     return condition.getBackgroundUrlImage(infoWeather).then(function (response2) {                        
-                        infoWeather.date = date.toLocaleString();
+                        infoWeather.date = date.toDateString();
                         infoWeather.temperature = new Temperature(response.main.temp);
                         infoWeather.condition = condition;
                         infoWeather.urlWeatherImage = condition.urlImg;
